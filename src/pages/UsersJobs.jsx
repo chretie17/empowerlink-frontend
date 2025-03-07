@@ -83,8 +83,9 @@ const JobListingsForUsers = () => {
             result = result.filter(job => 
                 job.title.toLowerCase().includes(search) ||
                 job.description.toLowerCase().includes(search) ||
-                job.skills_required.toLowerCase().includes(search) ||
-                job.location.toLowerCase().includes(search)
+                (job.skills_required && job.skills_required.toLowerCase().includes(search)) ||
+                job.location.toLowerCase().includes(search) ||
+                (job.employer_name && job.employer_name.toLowerCase().includes(search))
             );
         }
         
@@ -121,7 +122,7 @@ const JobListingsForUsers = () => {
             setSnackbarSeverity('success');
             setOpenSnackbar(true);
         } catch (error) {
-            setSnackbarMessage('Failed to apply: ' + (error.response?.data?.message || 'Unknown error'));
+            setSnackbarMessage('Failed to apply: ' + (error.response?.data?.message || 'You may have already applied wait for confirmation'));
             setSnackbarSeverity('error');
             setOpenSnackbar(true);
         }
@@ -194,7 +195,7 @@ const JobListingsForUsers = () => {
                         <div className="relative w-full md:w-64">
                             <input
                                 type="text"
-                                placeholder="Search jobs..."
+                                placeholder="Search jobs, skills, companies..."
                                 className="w-full pl-10 pr-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -339,6 +340,11 @@ const JobListingsForUsers = () => {
                                             </div>
                                         )}
                                         
+                                        {/* Employer bar */}
+                                        <div className="bg-blue-800 text-white px-4 py-1 text-sm">
+                                            <span className="font-medium">Posted by:</span> {job.employer_name || `Employer #${job.employer_id}`}
+                                        </div>
+                                        
                                         <div className="flex flex-col md:flex-row justify-between p-6">
                                             <div className="mb-4 md:mb-0">
                                                 <div className="flex items-center">
@@ -408,6 +414,20 @@ const JobListingsForUsers = () => {
                                                 <div>
                                                     <h4 className="text-lg font-semibold text-blue-700 mb-2">Job Description</h4>
                                                     <p className="text-gray-700 whitespace-pre-line">{job.description || 'No description provided'}</p>
+                                                    
+                                                    {/* Company info */}
+                                                    <div className="mt-6 bg-white rounded-lg p-4 border border-blue-200">
+                                                        <h5 className="font-semibold text-blue-700 mb-2">About the Employer</h5>
+                                                        <div className="flex items-center mb-2">
+                                                            <div className="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 font-bold mr-3">
+                                                                {job.employer_name ? job.employer_name.charAt(0).toUpperCase() : 'E'}
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-medium">{job.employer_name || `Employer #${job.employer_id}`}</p>
+                                                                <p className="text-sm text-gray-500">{job.location}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     
                                                     {/* Matching skills highlight */}
                                                     {job.matchingSkills && job.matchingSkills.length > 0 && (

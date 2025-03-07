@@ -11,6 +11,7 @@ import ManageUsers from './pages/ManageUsers';
 import ManageJobs from './pages/ManageJobs';
 import JobListingsForUsers from './pages/UsersJobs';
 import EmployerDashboard from './pages/EmployerPage';
+import UserApplications from './pages/AppliedJobs';
 
 const App = () => {
     const [role, setRole] = useState(localStorage.getItem('role'));
@@ -38,6 +39,7 @@ const App = () => {
                         <Route path="/jobs" element={<JobListingsForUsers />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/employerdashboard" element={<EmployerDashboard />} />
+                        <Route path="/userapplications" element={<UserApplications />} />
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/manage-users" element={<ManageUsers />} />
                         <Route path="/manage-jobs" element={<ManageJobs />} />
