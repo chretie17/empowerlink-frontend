@@ -152,6 +152,26 @@ const Navbar = ({ loggedIn }) => {
                                     >
                                         Your Applications
                                     </Link>
+                                    <Link 
+                                        to="/skillsassessment" 
+                                        className={`px-3 py-2 rounded-lg text-sm font-medium tracking-wide transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-md ${
+                                            scrolled 
+                                                ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50 hover:shadow-blue-100' 
+                                                : 'text-blue-100 hover:text-white hover:bg-white/20 hover:shadow-white/20'
+                                        }`}
+                                    >
+                                        Skills Assesment
+                                    </Link>
+                                    <Link 
+                                        to="/forum" 
+                                        className={`px-3 py-2 rounded-lg text-sm font-medium tracking-wide transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-md ${
+                                            scrolled 
+                                                ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50 hover:shadow-blue-100' 
+                                                : 'text-blue-100 hover:text-white hover:bg-white/20 hover:shadow-white/20'
+                                        }`}
+                                    >
+                                        Forums
+                                    </Link>
                                     <button 
                                         onClick={handleLogout} 
                                         className={`px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all duration-300 ease-in-out transform hover:scale-105 ${
