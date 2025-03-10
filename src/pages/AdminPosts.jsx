@@ -438,34 +438,7 @@ const AdminContentManagement = () => {
             </div>
             
             <div className="flex items-center space-x-3">
-              <Button 
-                variant="outlined" 
-                startIcon={<Refresh />}
-                onClick={fetchData}
-                style={{ borderRadius: '0.5rem' }}
-              >
-                Refresh Data
-              </Button>
               
-              <IconButton
-                onClick={handleActionsMenuOpen}
-                aria-label="more options"
-              >
-                <MoreVert />
-              </IconButton>
-              
-              <Menu
-                anchorEl={actionsMenuAnchor}
-                open={Boolean(actionsMenuAnchor)}
-                onClose={handleActionsMenuClose}
-              >
-                <MenuItem onClick={() => { handleActionsMenuClose(); /* Export data logic */ }}>
-                  Export Data
-                </MenuItem>
-                <MenuItem onClick={() => { handleActionsMenuClose(); /* Bulk actions logic */ }}>
-                  Bulk Actions
-                </MenuItem>
-              </Menu>
             </div>
           </div>
           
@@ -554,27 +527,9 @@ const AdminContentManagement = () => {
               </div>
               
               <div className="flex items-center space-x-2">
-                <FormControlLabel
-                  control={
-                    <Switch 
-                      checked={storyFilters.featured}
-                      onChange={() => handleToggleStoryFilter('featured')}
-                      color="primary"
-                    />
-                  }
-                  label="Featured Only"
-                />
+          
                 
-                <Button 
-                  variant="text" 
-                  color="inherit"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setStoryFilters({ featured: false });
-                  }}
-                >
-                  Clear Filters
-                </Button>
+                
               </div>
             </div>
             
@@ -811,14 +766,7 @@ const AdminContentManagement = () => {
                 <Tab 
                   label={
                     <div className="flex items-center">
-                      <span>Flagged Content</span>
-                      {flaggedContent.length > 0 && (
-                        <Badge 
-                          badgeContent={flaggedContent.length} 
-                          color="error" 
-                          sx={{ ml: 1 }}
-                        />
-                      )}
+                     
                     </div>
                   }
                 />
@@ -843,38 +791,9 @@ const AdminContentManagement = () => {
               </div>
               
               <div className="flex items-center space-x-2">
-                <FormControlLabel
-                  control={
-                    <Switch 
-                      checked={topicFilters.pinned}
-                      onChange={() => handleToggleTopicFilter('pinned')}
-                      color="primary"
-                    />
-                  }
-                  label="Pinned Only"
-                />
                 
-                <FormControlLabel
-                  control={
-                    <Switch 
-                      checked={topicFilters.flagged}
-                      onChange={() => handleToggleTopicFilter('flagged')}
-                      color="error"
-                    />
-                  }
-                  label="Flagged Only"
-                />
                 
-                <Button 
-                  variant="text" 
-                  color="inherit"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setTopicFilters({ pinned: false, flagged: false });
-                  }}
-                >
-                  Clear Filters
-                </Button>
+                
               </div>
             </div>
             

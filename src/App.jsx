@@ -15,6 +15,8 @@ import UserApplications from './pages/AppliedJobs';
 import SkillsAssessment from './pages/SkillsAssessment';
 import CommunityPost from './pages/CommunityPost';
 import AdminContentManagement from './pages/AdminPosts';
+import AdminSkillsManagement from './pages/AdminSkills';
+import EmployerTalentSearch from './pages/EmployerSkillsPage';
 
 const App = () => {
     const [role, setRole] = useState(localStorage.getItem('role'));
@@ -46,6 +48,8 @@ const App = () => {
                         <Route path="/skillsassessment" element={<SkillsAssessment/>} />
                         <Route path="/forum" element={<CommunityPost />} />
                         <Route path="/adminforums" element={<AdminContentManagement />} />
+                        <Route path="/adminskills" element={<AdminSkillsManagement />} />
+                        <Route path="/skillsemployers" element={<EmployerTalentSearch />} />
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/manage-users" element={<ManageUsers />} />
                         <Route path="/manage-jobs" element={<ManageJobs />} />
