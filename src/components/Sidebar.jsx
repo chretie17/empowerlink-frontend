@@ -189,6 +189,18 @@ const Sidebar = () => {
                                             </svg>
                                             {!collapsed || isMobile ? <span className="animate-fadeIn font-medium">Skills & Trainings</span> : null}
                                         </Link>
+                                        <Link 
+                                            to="/reports" 
+                                            className={`flex items-center px-4 py-3 rounded-xl transition-all duration-300 group
+                                            ${isActive('/reports') 
+                                                ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-md shadow-indigo-900/20' 
+                                                : 'text-gray-300 hover:bg-slate-700/50 hover:text-white'}`}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${!collapsed || isMobile ? 'mr-3' : ''} transition-transform group-hover:scale-110 duration-300`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                            </svg>
+                                            {!collapsed || isMobile ? <span className="animate-fadeIn font-medium">Reports</span> : null}
+                                        </Link>
                                     </li>
                                 </>
                             )}

@@ -17,6 +17,7 @@ import CommunityPost from './pages/CommunityPost';
 import AdminContentManagement from './pages/AdminPosts';
 import AdminSkillsManagement from './pages/AdminSkills';
 import EmployerTalentSearch from './pages/EmployerSkillsPage';
+import Reports from './pages/Report';
 
 const App = () => {
     const [role, setRole] = useState(localStorage.getItem('role'));
@@ -50,6 +51,7 @@ const App = () => {
                         <Route path="/adminforums" element={<AdminContentManagement />} />
                         <Route path="/adminskills" element={<AdminSkillsManagement />} />
                         <Route path="/skillsemployers" element={<EmployerTalentSearch />} />
+                        <Route path="/reports" element={<Reports />} />
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/manage-users" element={<ManageUsers />} />
                         <Route path="/manage-jobs" element={<ManageJobs />} />
