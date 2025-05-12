@@ -200,7 +200,7 @@ const EmployerDashboard = () => {
                                 <div className="flex justify-between items-center mb-6">
                                     <h2 className="text-xl font-bold text-gray-800">Your Job Listings</h2>
                                     <a 
-                                        href="/jobs/create" 
+                                        href="/manage-jobs" 
                                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors"
                                     >
                                         Post New Job
