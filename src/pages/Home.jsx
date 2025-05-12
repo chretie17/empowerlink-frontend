@@ -6,9 +6,12 @@ const Home = () => {
     
     // Check for user in localStorage on component mount
     useEffect(() => {
+        // Look for either token or role in localStorage to determine login state
         const token = localStorage.getItem('token');
-        const userId = localStorage.getItem('userId');
-        setIsLoggedIn(token && userId ? true : false);
+        const role = localStorage.getItem('role');
+        
+        // Consider user logged in if either token or role exists
+        setIsLoggedIn(token || role ? true : false);
     }, []);
 
     return (
