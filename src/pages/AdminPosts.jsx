@@ -432,7 +432,7 @@ const AdminContentManagement = () => {
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">
-                <span className="border-b-4 border-blue-500 pb-1">Admin Dashboard</span>
+                <span className="border-b-4 border-blue-500 pb-1">Manage Forum</span>
               </h1>
               <p className="text-gray-600 mt-2">Manage community content and user interactions</p>
             </div>

@@ -860,8 +860,8 @@ const addCommunityEngagementContent = (pdf, reportData, margin, startY, pageWidt
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           {/* Page Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 text-white">
-            <h1 className="text-2xl font-bold">EmpowerLink Reports</h1>
+          <div className="bg-blue-900 px-6 py-4 text-white">
+          <h1 className="text-2xl font-bold">EmpowerLink Reports</h1>
             <p className="text-blue-100">System analytics and performance metrics</p>
           </div>
           

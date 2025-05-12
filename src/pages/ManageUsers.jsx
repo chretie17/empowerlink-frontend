@@ -59,8 +59,8 @@ const ManageUsers = () => {
     return (
         <div className="min-h-screen bg-gray-50 p-8">
             <div className="max-w-7xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-500 to-blue-700 p-6">
-                    <h1 className="text-4xl font-extrabold text-white tracking-wide">Manage Users</h1>
+            <div className="bg-blue-900 px-6 py-4 text-white">
+            <h1 className="text-4xl font-extrabold text-white tracking-wide">Manage Users</h1>
                 </div>
 
                 <div className="p-6">

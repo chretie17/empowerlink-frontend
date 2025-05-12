@@ -167,36 +167,7 @@ const Dashboard = () => {
               >
                 Overview
               </button>
-              <button
-                onClick={() => setActiveTab('users')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'users'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Users
-              </button>
-              <button
-                onClick={() => setActiveTab('jobs')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'jobs'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Jobs
-              </button>
-              <button
-                onClick={() => setActiveTab('applications')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'applications'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Applications
-              </button>
+              
             </nav>
           </div>
         </div>

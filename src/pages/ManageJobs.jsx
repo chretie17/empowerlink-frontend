@@ -194,7 +194,7 @@ const JobListings = () => {
             <div className="max-w-7xl mx-auto">
                 <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
                     <div className="flex justify-between items-center mb-6">
-                        <h1 className="text-3xl font-bold text-blue-800">
+                        <h1 className="text-3xl font-bold text-blue-900">
                             <span className="border-b-4 border-blue-500 pb-1">
                                 {isAdmin ? 'Manage All Jobs' : 'Manage Your Jobs'}
                             </span>
@@ -225,7 +225,7 @@ const JobListings = () => {
                     
                     {showForm && (
                         <div className="bg-blue-100 p-6 rounded-xl shadow-inner mb-8 border border-blue-200">
-                            <h2 className="text-2xl font-bold mb-6 text-blue-800 border-b border-blue-300 pb-2">
+                            <h2 className="text-2xl font-bold mb-6 text-blue-900 border-b border-blue-300 pb-2">
                                 {editingJob ? 'Edit Job Listing' : 'Create New Job Listing'}
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -352,7 +352,7 @@ const JobListings = () => {
                                     {editingJob ? 'Update Job Listing' : 'Post Job Listing'}
                                 </button>
                                 <button 
-                                    className="ml-4 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-6 py-3 rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg" 
+                                    className="ml-4 bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold px-6 py-3 rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg" 
                                     onClick={() => {
                                         setShowForm(false);
                                         setEditingJob(null);
@@ -377,7 +377,7 @@ const JobListings = () => {
                     )}
 
                     <div className="space-y-6">
-                        <h2 className="text-2xl font-bold text-blue-800 flex items-center">
+                        <h2 className="text-2xl font-bold text-blue-900 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                             </svg>
@@ -405,7 +405,7 @@ const JobListings = () => {
                                         <div key={job.id} className={`bg-white border ${expired ? 'border-gray-200' : 'border-blue-200'} rounded-xl shadow-md overflow-hidden transition-all duration-300`}>
                                             {/* Job owner indicator for admin */}
                                             {isAdmin && (
-                                                <div className="bg-blue-800 text-white px-4 py-1 text-sm">
+                                                <div className="bg-blue-900 text-white px-4 py-1 text-sm">
                                                     Posted by: {job.employer_name || `Employer #${job.employer_id}`}
                                                 </div>
                                             )}
@@ -413,7 +413,7 @@ const JobListings = () => {
                                             <div className="flex flex-col md:flex-row md:items-center justify-between p-6 border-b border-blue-100">
                                                 <div className="mb-4 md:mb-0">
                                                     <div className="flex items-center">
-                                                        <h3 className="text-xl font-bold text-blue-800">{job.title}</h3>
+                                                        <h3 className="text-xl font-bold text-blue-900">{job.title}</h3>
                                                         {expired && (
                                                             <span className="ml-3 px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
                                                                 Expired
@@ -465,7 +465,7 @@ const JobListings = () => {
                                                     </button>
                                                     
                                                     <button 
-                                                        className="flex items-center justify-center px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition-colors shadow-sm" 
+                                                        className="flex items-center justify-center px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-lg transition-colors shadow-sm" 
                                                         onClick={() => toggleJobDetails(job.id)}
                                                     >
                                                         {expandedJobId === job.id ? (
@@ -666,7 +666,7 @@ const JobListings = () => {
                                                 <div className="p-4">
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                         <div>
-                                                            <h4 className="font-semibold text-blue-800 mb-2">Applicant Details</h4>
+                                                            <h4 className="font-semibold text-blue-900 mb-2">Applicant Details</h4>
                                                             <div className="bg-gray-50 p-3 rounded border">
                                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                                     <div>
@@ -690,7 +690,7 @@ const JobListings = () => {
                                                         </div>
                                                         
                                                         <div>
-                                                            <h4 className="font-semibold text-blue-800 mb-2">Skills</h4>
+                                                            <h4 className="font-semibold text-blue-900 mb-2">Skills</h4>
                                                             <div className="bg-gray-50 p-3 rounded border">
                                                                 {application.user_skills ? (
                                                                     <div className="flex flex-wrap gap-2">
@@ -707,7 +707,7 @@ const JobListings = () => {
                                                             
                                                             {application.feedback && (
                                                                 <div className="mt-4">
-                                                                    <h4 className="font-semibold text-blue-800 mb-2">Feedback</h4>
+                                                                    <h4 className="font-semibold text-blue-900 mb-2">Feedback</h4>
                                                                     <div className="bg-gray-50 p-3 rounded border">
                                                                         <p>{application.feedback}</p>
                                                                     </div>
