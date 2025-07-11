@@ -37,9 +37,13 @@ const App = () => {
             {!role && <Navbar />}
             {(role === 'user') && <Navbar loggedIn />}
             <div className="flex">
-                {(role === 'admin' || role === 'employer') && role !== null && <Sidebar />}
-                <div className={`flex-1 p-4 ${role === 'admin' || role === 'employer' ? 'ml-64' : ''}`}> 
-                    <Routes>
+  {/* Sidebar for admin, employer, microfinance, trainer, counselor, service provider, and moderator */}
+  {(role === 'admin' || role === 'employer' || role === 'microfinance' || role === 'trainer' || role === 'counselor' || role === 'serviceprovider' || role === 'moderator') && role !== null && <Sidebar />}
+
+  {/* Main content area with conditional left margin */}
+  <div className={`flex-1 p-4 ${role === 'admin' || role === 'employer' || role === 'microfinance' || role === 'trainer' || role === 'counselor' || role === 'serviceprovider' || role === 'moderator' ? 'ml-64' : ''}`}>
+    <Routes>
+        
                         <Route path="/" element={<Home />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/jobs" element={<JobListingsForUsers />} />

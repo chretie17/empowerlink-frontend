@@ -141,9 +141,15 @@ const ManageUsers = () => {
                                     value={userForm.role} 
                                     onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
                                 >
-                                    <option value="user">User</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="employer">Employer</option>
+                                    <option value="user">User – Finds jobs, training, and help</option>
+<option value="admin">Admin – Manages the whole system</option>
+<option value="employer">Employer – Posts jobs and hires people</option>
+<option value="microfinance">Microfinance – Gives small loans and savings</option>
+<option value="trainer">Trainer – Teaches skills and business</option>
+<option value="counselor">Counselor – Helps plan careers</option>
+<option value="serviceprovider">Service Provider – Offers services like health or school</option>
+<option value="moderator">Moderator – Watches forums and chats</option>
+
                                 </select>
                                 <input 
                                     type="password" 
@@ -185,14 +191,20 @@ const ManageUsers = () => {
                                         <td className="py-3 px-6">{user.name}</td>
                                         <td className="py-3 px-6">{user.email}</td>
                                         <td className="py-3 px-6">
-                                            <span className={`
-                                                px-3 py-1 rounded-full text-xs font-bold
-                                                ${user.role === 'admin' ? 'bg-red-200 text-red-800' : 
-                                                  user.role === 'employer' ? 'bg-green-200 text-green-800' : 
-                                                  'bg-blue-200 text-blue-800'}
-                                            `}>
-                                                {user.role}
-                                            </span>
+                                           <span className={`
+  px-3 py-1 rounded-full text-xs font-bold
+  ${user.role === 'admin' ? 'bg-red-200 text-red-800' : 
+    user.role === 'employer' ? 'bg-green-200 text-green-800' : 
+    user.role === 'microfinance' ? 'bg-yellow-200 text-yellow-800' :
+    user.role === 'trainer' ? 'bg-purple-200 text-purple-800' :
+    user.role === 'counselor' ? 'bg-pink-200 text-pink-800' :
+    user.role === 'serviceprovider' ? 'bg-indigo-200 text-indigo-800' :
+    user.role === 'moderator' ? 'bg-orange-200 text-orange-800' :
+    'bg-blue-200 text-blue-800'}
+`}>
+  {user.role}
+</span>
+
                                         </td>
                                         <td className="py-3 px-6">
                                             <div className="flex items-center space-x-2">
