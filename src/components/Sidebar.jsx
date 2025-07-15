@@ -109,6 +109,12 @@ const Sidebar = () => {
                         icon: FileText,
                         label: 'Reports',
                         roles: ['admin']
+                    },
+                    {
+                        path: '/microfinancedashboard',
+                        icon: FileText,
+                        label: 'Microfinance Dashboard',
+                        roles: ['admin']
                     }
                 ]
             });
@@ -186,7 +192,7 @@ const Sidebar = () => {
                 section: 'Financial Services',
                 items: [
                     {
-                        path: '/finance',
+                        path: '/microfinancedashboard',
                         icon: Zap,
                         label: 'Financial Services',
                         roles: ['microfinance']
@@ -194,17 +200,19 @@ const Sidebar = () => {
                     
                 ]
             });
+
         }
          if (role === 'counselor') {
             items.push({
                 section: 'Career Counseling',
                 items: [
+                   
                     {
-                        path: '/manage-jobs',
-                        icon: Zap,
-                        label: 'Career Counseling',
+                        path: '/counselordashboard',
+                        icon: Search,
+                        label: 'Counselor Dashboard',
                         roles: ['counselor']
-                    },
+                    }
                     
                 ]
             });

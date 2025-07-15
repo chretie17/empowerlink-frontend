@@ -17,7 +17,11 @@ import CommunityPost from './pages/CommunityPost';
 import AdminContentManagement from './pages/AdminPosts';
 import AdminSkillsManagement from './pages/AdminSkills';
 import EmployerTalentSearch from './pages/EmployerSkillsPage';
+import Microfinanceusers from './pages/Microfinanceusers';
 import Reports from './pages/Report';
+import AdminDashboard from './pages/MicrofinanceDashboard';
+import CounselorDashboard from './pages/CounselorDashboard';
+import UserDashboard from './pages/UserCounseling';
 
 const App = () => {
     const [role, setRole] = useState(localStorage.getItem('role'));
@@ -51,6 +55,10 @@ const App = () => {
                         <Route path="/employerdashboard" element={<EmployerDashboard />} />
                         <Route path="/userapplications" element={<UserApplications />} />
                         <Route path="/skillsassessment" element={<SkillsAssessment/>} />
+                        <Route path="/microfinanceusers" element={<Microfinanceusers />} />
+                        <Route path="/microfinancedashboard" element={<AdminDashboard />} />
+                        <Route path="/counselordashboard" element={<CounselorDashboard/>} />
+                        <Route path="/usercounseling" element={<UserDashboard />} />
                         <Route path="/forum" element={<CommunityPost />} />
                         <Route path="/adminforums" element={<AdminContentManagement />} />
                         <Route path="/adminskills" element={<AdminSkillsManagement />} />
