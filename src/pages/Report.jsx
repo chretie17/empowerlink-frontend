@@ -4,7 +4,7 @@ import { useReactToPrint } from 'react-to-print';
 import API_URL from '../api';
 import html2canvas from 'jspdf-html2canvas';
 import jsPDF from 'jspdf';
-
+import logoImage from '../assets/logo.jpg'; // Adjust the path to match your project structure
 const Reports = () => {
   // Main state
   const [activeTab, setActiveTab] = useState('user-overview');
@@ -33,115 +33,140 @@ const Reports = () => {
   });
   
   // Fetch report data with optional filters
- const exportToPDF = async () => {
-  // Show loading indicator
+// Enhanced PDF Export Functions for EmpowerLink Reports
+// Add these functions to replace the existing exportToPDF function
+
+const exportToPDF = async () => {
   setIsPdfExporting(true);
   
   try {
-    // Create a new PDF document (A4 size)
-    const pdf = new jsPDF('p', 'pt', 'a4');
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 50;
-    
-    // Create report title based on active tab
-    const reportTitles = {
-      'user-overview': 'User Overview Report',
-      'job-market': 'Job Market Report',
-      'skills-assessment': 'Skills Assessment Report',
-      'community-engagement': 'Community Engagement Report'
-    };
-    const title = reportTitles[activeTab] || 'EmpowerLink Report';
+    // Load pdfMake if not already loaded
+    if (typeof window !== 'undefined' && !window.pdfMake) {
+      await new Promise((resolve, reject) => {
+        const script1 = document.createElement('script');
+        script1.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js';
+        script1.onload = () => {
+          const script2 = document.createElement('script');
+          script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js';
+          script2.onload = resolve;
+          script2.onerror = reject;
+          document.head.appendChild(script2);
+        };
+        script1.onerror = reject;
+        document.head.appendChild(script1);
+      });
+    }
 
-    // ---- Document Header ----
-    // Add logo (simulated with text for simplicity)
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(24);
-    pdf.setTextColor(30, 64, 175); // Dark blue
-    pdf.text('EmpowerLink', margin, 60);
+    if (!window.pdfMake) {
+      throw new Error('PDF library failed to load');
+    }
     
-    // Add horizontal line
-    pdf.setDrawColor(220, 220, 220);
-    pdf.setLineWidth(1);
-    pdf.line(margin, 70, pageWidth - margin, 70);
+    const reportTitle = getReportTitle(activeTab);
+    const headerContent = await createProfessionalHeader(reportTitle);
     
-    // Add report title
-    pdf.setFontSize(18);
-    pdf.setTextColor(60, 60, 60);
-    pdf.text(title, margin, 100);
-    
-    // Add date and time
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(10);
-    pdf.setTextColor(120, 120, 120);
-    pdf.text(`Generated: ${new Date().toLocaleString()}`, margin, 120);
-    
-    // Add filter information if any
-    let yPos = 140;
-    if (startDate || endDate || searchTerm) {
-      pdf.setFontSize(10);
-      pdf.setTextColor(100, 100, 100);
+    const docDefinition = {
+      pageSize: 'A4',
+      pageOrientation: 'landscape',
+      pageMargins: [40, 50, 40, 40],
       
-      if (startDate || endDate) {
-        let dateText = 'Date Range: ';
-        if (startDate && endDate) {
-          dateText += `${startDate} to ${endDate}`;
-        } else if (startDate) {
-          dateText += `From ${startDate}`;
-        } else if (endDate) {
-          dateText += `Until ${endDate}`;
+      header: {
+        columns: [
+          { text: 'EmpowerLink - Confidential Report', style: 'headerFooter' },
+          { text: '', style: 'headerFooter' },
+        ],
+        margin: [40, 12]
+      },
+      
+      footer: (currentPage, pageCount) => ({
+        columns: [
+          { text: '© 2025 EmpowerLink. All rights reserved.', style: 'headerFooter' },
+          { text: '', style: 'headerFooter' },
+          { text: `Page ${currentPage} of ${pageCount}`, style: 'headerFooter', alignment: 'right' }
+        ],
+        margin: [40, 12]
+      }),
+
+      content: [
+        ...headerContent,
+        ...createReportMetadata(),
+        ...generateReportContent()
+      ],
+
+      styles: {
+        bigCenterHeader: {
+          fontSize: 26,
+          bold: true,
+          color: '#1e40af',
+          margin: [0, 0, 0, 2]
+        },
+        companyAddress: {
+          fontSize: 11,
+          color: '#6B7280',
+          margin: [0, 1, 0, 0]
+        },
+        companyTagline: {
+          fontSize: 10,
+          italics: true,
+          color: '#9CA3AF'
+        },
+        headerInfoLabel: {
+          fontSize: 9,
+          color: '#6B7280',
+          bold: true
+        },
+        headerInfoValue: {
+          fontSize: 10,
+          color: '#374151'
+        },
+        confidentialStamp: {
+          fontSize: 10,
+          bold: true,
+          color: '#DC2626'
+        },
+        landscapeReportTitle: {
+          fontSize: 20,
+          bold: true,
+          color: '#1e40af',
+          alignment: 'center'
+        },
+        landscapeMetadata: {
+          fontSize: 11,
+          color: '#374151',
+          lineHeight: 1.4
+        },
+        landscapeSubsectionHeader: {
+          fontSize: 14,
+          bold: true,
+          color: '#374151'
+        },
+        landscapeTableHeader: {
+          fontSize: 10,
+          bold: true
+        },
+        landscapeTableCell: {
+          fontSize: 9
+        },
+        headerFooter: {
+          fontSize: 8,
+          color: '#6B7280'
+        },
+        noData: {
+          fontSize: 14,
+          alignment: 'center',
+          color: '#6B7280',
+          italics: true
         }
-        pdf.text(dateText, margin, yPos);
-        yPos += 15;
+      },
+
+      defaultStyle: {
+        fontSize: 10,
+        lineHeight: 1.2,
+        color: '#374151'
       }
-      
-      if (searchTerm) {
-        pdf.text(`Search Filter: "${searchTerm}"`, margin, yPos);
-        yPos += 15;
-      }
-      
-      // Add space after filters
-      yPos += 10;
-    }
-    
-    // Add divider
-    pdf.setDrawColor(220, 220, 220);
-    pdf.setLineWidth(0.5);
-    pdf.line(margin, yPos, pageWidth - margin, yPos);
-    yPos += 20;
-    
-    // Add report content based on active tab
-    switch (activeTab) {
-      case 'user-overview':
-        yPos = addUserOverviewContent(pdf, reportData, margin, yPos, pageWidth);
-        break;
-      case 'job-market':
-        yPos = addJobMarketContent(pdf, reportData, margin, yPos, pageWidth);
-        break;
-      case 'skills-assessment':
-        yPos = addSkillsAssessmentContent(pdf, reportData, margin, yPos, pageWidth);
-        break;
-      case 'community-engagement':
-        yPos = addCommunityEngagementContent(pdf, reportData, margin, yPos, pageWidth);
-        break;
-      default:
-        pdf.setTextColor(60, 60, 60);
-        pdf.setFontSize(12);
-        pdf.text('No data available for this report type.', margin, yPos);
-    }
-    
-    // Add footer
-    pdf.setDrawColor(220, 220, 220);
-    pdf.setLineWidth(0.5);
-    pdf.line(margin, pageHeight - 50, pageWidth - margin, pageHeight - 50);
-    
-    pdf.setTextColor(120, 120, 120);
-    pdf.setFontSize(8);
-    pdf.text('EmpowerLink © ' + new Date().getFullYear(), margin, pageHeight - 30);
-    pdf.text('Page 1', pageWidth - margin - 30, pageHeight - 30);
-    
-    // Save the PDF file
-    pdf.save(`EmpowerLink_${activeTab}_${new Date().toISOString().slice(0,10)}.pdf`);
+    };
+
+    const fileName = `EmpowerLink_${activeTab}_${new Date().toISOString().split('T')[0]}_Report.pdf`;
+    window.pdfMake.createPdf(docDefinition).download(fileName);
     
   } catch (error) {
     console.error('Error generating PDF:', error);
@@ -151,371 +176,617 @@ const Reports = () => {
   }
 };
 
-// Function to add a section title consistently
-const addSectionTitle = (pdf, title, margin, yPos) => {
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(14);
-  pdf.setTextColor(30, 64, 175); // Dark blue
-  pdf.text(title, margin, yPos);
-  return yPos + 20;
+// Enhanced logo loading from assets
+const getEmpowerLinkLogo = async () => {
+  try {
+    // Try to load the imported logo first
+    if (logoImage) {
+      const response = await fetch(logoImage);
+      if (response.ok) {
+        const blob = await response.blob();
+        
+        if (blob.type.startsWith('image/')) {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const result = reader.result;
+              if (result && result.startsWith('data:image/')) {
+                resolve(result);
+              } else {
+                reject(new Error('Invalid data URL format'));
+              }
+            };
+            reader.onerror = () => reject(new Error('Failed to read image'));
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    }
+  } catch (error) {
+    console.log('Imported logo failed, trying public path:', error.message);
+  }
+
+  try {
+    // Try public assets path
+    const response = await fetch('/assets/logo.jpg');
+    if (response.ok) {
+      const blob = await response.blob();
+      
+      if (blob.type.startsWith('image/')) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const result = reader.result;
+            if (result && result.startsWith('data:image/')) {
+              resolve(result);
+            } else {
+              reject(new Error('Invalid data URL format'));
+            }
+          };
+          reader.onerror = () => reject(new Error('Failed to read image'));
+          reader.readAsDataURL(blob);
+        });
+      }
+    }
+  } catch (error) {
+    console.log('Public path logo failed:', error.message);
+  }
+  
+  // Enhanced SVG fallback logo if image loading fails
+  console.log('Using enhanced SVG fallback logo');
+  const svgContent = `
+    <svg width="150" height="60" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#1e40af;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+        </linearGradient>
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+        </filter>
+      </defs>
+      <rect width="150" height="60" fill="url(#logoGradient)" rx="12" filter="url(#shadow)"/>
+      <text x="75" y="25" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="white">EMPOWER</text>
+      <text x="75" y="42" font-family="Arial" font-size="10" text-anchor="middle" fill="white">LINK</text>
+      <circle cx="25" cy="20" r="8" fill="white" opacity="0.3"/>
+      <circle cx="125" cy="40" r="6" fill="white" opacity="0.2"/>
+      <path d="M20 30 L30 35 L20 40 Z" fill="white" opacity="0.4"/>
+      <path d="M120 25 L130 30 L120 35 Z" fill="white" opacity="0.3"/>
+    </svg>
+  `;
+  
+  return 'data:image/svg+xml;base64,' + btoa(svgContent);
 };
 
-// Function to create a clean table
-const createTable = (pdf, headers, data, margin, startY, pageWidth, options = {}) => {
-  const defaultOptions = {
-    fontSize: 9,
-    headerFontSize: 10,
-    rowHeight: 25,
-    textColor: [60, 60, 60],
-    headerBgColor: [240, 240, 240],
-    alternateRowColor: [248, 248, 248]
-  };
+// Professional header creation
+const createProfessionalHeader = async (reportTitle) => {
+  let logoBase64;
+  try {
+    logoBase64 = await getEmpowerLinkLogo();
+  } catch (error) {
+    console.log('Logo creation failed:', error.message);
+    logoBase64 = null;
+  }
   
-  const opts = { ...defaultOptions, ...options };
-  let yPos = startY;
+  const headerColumns = [];
   
-  // Calculate column widths
-  const tableWidth = pageWidth - (2 * margin);
-  const colWidths = [];
-  
-  if (headers.length > 0) {
-    // Equal width if not specified
-    const equalWidth = tableWidth / headers.length;
-    headers.forEach(header => {
-      colWidths.push(header.width || equalWidth);
+  // Logo section
+  if (logoBase64) {
+    headerColumns.push({
+      width: 120,
+      image: logoBase64,
+      fit: [120, 60],
+      margin: [0, 5, 0, 0]
+    });
+  } else {
+    headerColumns.push({
+      width: 120,
+      text: ''
     });
   }
   
-  // Draw table header
-  pdf.setFillColor(...opts.headerBgColor);
-  pdf.rect(margin, yPos, tableWidth, opts.rowHeight, 'F');
-  
-  pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(...opts.textColor);
-  pdf.setFontSize(opts.headerFontSize);
-  
-  let xOffset = margin + 5;
-  headers.forEach((header, index) => {
-    pdf.text(header.name, xOffset, yPos + opts.rowHeight/2 + opts.headerFontSize/3);
-    xOffset += colWidths[index];
+  // Company information
+  headerColumns.push({
+    width: '*',
+    stack: [
+      {
+        text: 'EMPOWERLINK',
+        style: 'bigCenterHeader',
+        color: '#1e40af',
+        alignment: 'center'
+      },
+      {
+        text: 'Kigali, Rwanda',
+        style: 'companyAddress',
+        alignment: 'center',
+        margin: [0, 2, 0, 0]
+      },
+      {
+        text: 'Website: www.empowerlink.rw',
+        style: 'companyAddress',
+        alignment: 'center',
+        margin: [0, 1, 0, 0]
+      },
+      {
+        text: 'System Analytics and Performance Metrics',
+        style: 'companyTagline',
+        alignment: 'center',
+        margin: [0, 3, 0, 0]
+      }
+    ]
   });
   
-  yPos += opts.rowHeight;
-  
-  // Draw rows
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(opts.fontSize);
-  
-  data.forEach((row, rowIndex) => {
-    // Alternate row background for better readability
-    if (rowIndex % 2 === 0) {
-      pdf.setFillColor(...opts.alternateRowColor);
-      pdf.rect(margin, yPos, tableWidth, opts.rowHeight, 'F');
-    }
-    
-    // Add cell data
-    let xOffset = margin + 5;
-    headers.forEach((header, colIndex) => {
-      const value = row[header.key];
-      let displayValue = value;
-      
-      // Handle special formatting
-      if (header.format === 'date' && value) {
-        displayValue = new Date(value).toLocaleDateString();
-      } else if (header.format === 'capitalize' && value) {
-        displayValue = value.charAt(0).toUpperCase() + value.slice(1);
-      } else if (typeof value === 'undefined' || value === null) {
-        displayValue = '-';
+  // Report metadata
+  headerColumns.push({
+    width: 120,
+    stack: [
+      {
+        text: 'Generated:',
+        style: 'headerInfoLabel',
+        alignment: 'right'
+      },
+      {
+        text: getCurrentDateTime(),
+        style: 'headerInfoValue',
+        alignment: 'right',
+        margin: [0, 1, 0, 3]
+      },
+      {
+        text: 'Status:',
+        style: 'headerInfoLabel',
+        alignment: 'right'
+      },
+      {
+        text: 'CONFIDENTIAL',
+        style: 'confidentialStamp',
+        alignment: 'right'
       }
-      
-      // Apply custom text color if specified
-      if (header.getTextColor) {
-        const customColor = header.getTextColor(value);
-        if (customColor) {
-          pdf.setTextColor(...customColor);
-        } else {
-          pdf.setTextColor(...opts.textColor);
+    ]
+  });
+  
+  return [
+    {
+      columns: headerColumns,
+      margin: [0, 0, 0, 15]
+    },
+    {
+      canvas: [
+        {
+          type: 'line',
+          x1: 0, y1: 0,
+          x2: 750, y2: 0,
+          lineWidth: 3,
+          lineColor: '#1e40af'
         }
-      }
-      
-      pdf.text(String(displayValue), xOffset, yPos + opts.rowHeight/2 + opts.fontSize/3);
-      
-      // Reset text color after custom coloring
-      if (header.getTextColor) {
-        pdf.setTextColor(...opts.textColor);
-      }
-      
-      xOffset += colWidths[colIndex];
-    });
-    
-    yPos += opts.rowHeight;
-  });
-  
-  // Add border around the table
-  pdf.setDrawColor(200, 200, 200);
-  pdf.setLineWidth(0.5);
-  pdf.rect(margin, startY, tableWidth, (data.length + 1) * opts.rowHeight);
-  
-  // Return the Y position after the table
-  return yPos + 10;
+      ],
+      margin: [0, 0, 0, 15]
+    },
+    {
+      text: reportTitle,
+      style: 'landscapeReportTitle',
+      alignment: 'center',
+      margin: [0, 10, 0, 20]
+    }
+  ];
 };
 
-// Function to add User Overview Content
-const addUserOverviewContent = (pdf, reportData, margin, startY, pageWidth) => {
-  let yPos = startY;
+// Get report title based on active tab
+const getReportTitle = (tab) => {
+  const titles = {
+    'user-overview': 'User Overview Report',
+    'job-market': 'Job Market Analysis Report',
+    'skills-assessment': 'Skills Assessment Report',
+    'community-engagement': 'Community Engagement Report'
+  };
+  return titles[tab] || 'EmpowerLink Report';
+};
+
+// Enhanced table creation
+const createProfessionalTable = (headers, data, options = {}) => {
+  const { 
+    headerColor = '#1e40af',
+    alternatingRows = true,
+    fontSize = 10,
+    widths = null 
+  } = options;
+
+  const tableContent = [
+    {
+      table: {
+        headerRows: 1,
+        widths: widths || Array(headers.length).fill('*'),
+        body: [
+          headers.map(header => ({
+            text: header,
+            style: 'landscapeTableHeader',
+            fillColor: headerColor,
+            color: 'white',
+            bold: true,
+            alignment: 'center'
+          })),
+          ...data.map((row, index) => 
+            row.map(cell => ({
+              text: cell || '-',
+              style: 'landscapeTableCell',
+              fillColor: alternatingRows && index % 2 === 0 ? '#F9FAFB' : 'white',
+              alignment: typeof cell === 'string' && cell.includes('%') ? 'center' : 
+                         cell && cell.toString().match(/^[\d,.\s]+$/) ? 'right' : 'left'
+            }))
+          )
+        ]
+      },
+      layout: {
+        hLineWidth: (i, node) => i === 0 || i === 1 || i === node.table.body.length ? 2 : 1,
+        vLineWidth: () => 1,
+        hLineColor: (i, node) => i === 0 || i === 1 ? headerColor : '#E5E7EB',
+        vLineColor: () => '#E5E7EB',
+        paddingLeft: () => 8,
+        paddingRight: () => 8,
+        paddingTop: () => 6,
+        paddingBottom: () => 6
+      },
+      fontSize: fontSize,
+      margin: [0, 8, 0, 10]
+    },
+    {
+      stack: [
+        {
+          text: 'Generated by: System Administrator',
+          fontSize: 8,
+          bold: true,
+          color: '#6B7280',
+          alignment: 'left',
+          margin: [0, 5, 0, 1]
+        },
+        {
+          text: getCurrentDateTime(),
+          fontSize: 7,
+          color: '#9CA3AF',
+          italics: true,
+          alignment: 'left'
+        }
+      ],
+      margin: [0, 0, 0, 15]
+    }
+  ];
+
+  return tableContent;
+};
+
+// Generate report metadata
+const createReportMetadata = () => {
+  const metadata = [];
+  
+  if (startDate || endDate) {
+    let dateText = 'Date Range: ';
+    if (startDate && endDate) {
+      dateText += `${startDate} to ${endDate}`;
+    } else if (startDate) {
+      dateText += `From ${startDate}`;
+    } else if (endDate) {
+      dateText += `Until ${endDate}`;
+    }
+    metadata.push(`📅 ${dateText}`);
+  }
+  
+  if (searchTerm) {
+    metadata.push(`🔍 Search Filter: "${searchTerm}"`);
+  }
+
+  if (metadata.length > 0) {
+    return [
+      {
+        table: {
+          widths: ['*'],
+          body: [[{
+            ul: metadata,
+            style: 'landscapeMetadata',
+            fillColor: '#F8F9FA',
+            margin: [12, 10, 12, 10]
+          }]]
+        },
+        layout: {
+          hLineWidth: () => 1,
+          vLineWidth: () => 1,
+          hLineColor: () => '#D1D5DB',
+          vLineColor: () => '#D1D5DB'
+        },
+        margin: [0, 0, 0, 15]
+      }
+    ];
+  }
+  return [];
+};
+
+// Generate report content based on active tab
+const generateReportContent = () => {
+  switch (activeTab) {
+    case 'user-overview':
+      return generateUserOverviewPDF();
+    case 'job-market':
+      return generateJobMarketPDF();
+    case 'skills-assessment':
+      return generateSkillsAssessmentPDF();
+    case 'community-engagement':
+      return generateCommunityEngagementPDF();
+    default:
+      return [{ text: 'No data available for this report type.', style: 'noData', margin: [0, 20] }];
+  }
+};
+
+// User Overview PDF content
+const generateUserOverviewPDF = () => {
   const { usersByRole, recentUsers, usersBySkillCategory } = reportData;
   
   if (!usersByRole) {
-    pdf.setTextColor(60, 60, 60);
-    pdf.setFontSize(12);
-    pdf.text('No data available for User Overview.', margin, yPos);
-    return yPos + 20;
+    return [{ text: 'No data available for User Overview.', style: 'noData', margin: [0, 20] }];
   }
   
+  const content = [];
+  
   // Users by Role Section
-  yPos = addSectionTitle(pdf, 'Users by Role', margin, yPos);
-  
-  // Create a table for user roles
-  const roleHeaders = [
-    { name: 'Role', key: 'role', format: 'capitalize', width: 200 },
-    { name: 'Count', key: 'count', width: 200 }
-  ];
-  
-  yPos = createTable(pdf, roleHeaders, usersByRole, margin, yPos, pageWidth);
-  yPos += 20;
+  content.push(
+    { text: 'Users by Role Distribution', style: 'landscapeSubsectionHeader', margin: [0, 5, 0, 12] },
+    ...createProfessionalTable(
+      ['Role', 'Count', 'Percentage'],
+      usersByRole.map(role => {
+        const total = usersByRole.reduce((sum, r) => sum + r.count, 0);
+        const percentage = Math.round((role.count / total) * 100);
+        return [
+          role.role.charAt(0).toUpperCase() + role.role.slice(1),
+          role.count.toString(),
+          `${percentage}%`
+        ];
+      }),
+      { widths: ['40%', '30%', '30%'], headerColor: '#1e40af' }
+    )
+  );
   
   // Recent Users Section
   if (recentUsers && recentUsers.length > 0) {
-    yPos = addSectionTitle(pdf, 'Recent Registrations', margin, yPos);
-    
-    const userHeaders = [
-      { name: 'Name', key: 'name', width: 150 },
-      { name: 'Email', key: 'email', width: 200 },
-      { name: 'Role', key: 'role', format: 'capitalize', width: 100 },
-      { name: 'Registered', key: 'created_at', format: 'date', width: 100 }
-    ];
-    
-    yPos = createTable(pdf, userHeaders, recentUsers.slice(0, 5), margin, yPos, pageWidth);
-    yPos += 20;
+    content.push(
+      { text: 'Recent User Registrations', style: 'landscapeSubsectionHeader', margin: [0, 25, 0, 12] },
+      ...createProfessionalTable(
+        ['Name', 'Email', 'Role', 'Registration Date'],
+        recentUsers.slice(0, 10).map(user => [
+          user.name,
+          user.email,
+          user.role.charAt(0).toUpperCase() + user.role.slice(1),
+          new Date(user.created_at).toLocaleDateString()
+        ]),
+        { widths: ['25%', '35%', '20%', '20%'], headerColor: '#059669' }
+      )
+    );
   }
   
   // Skills Distribution Section
   if (usersBySkillCategory && usersBySkillCategory.length > 0) {
-    yPos = addSectionTitle(pdf, 'Skills Distribution', margin, yPos);
-    
-    const skillHeaders = [
-      { name: 'Skill Category', key: 'category_name', width: 300 },
-      { name: 'Number of Users', key: 'user_count', width: 200 }
-    ];
-    
-    yPos = createTable(pdf, skillHeaders, usersBySkillCategory, margin, yPos, pageWidth);
+    content.push(
+      { text: 'Skills Category Distribution', style: 'landscapeSubsectionHeader', margin: [0, 25, 0, 12] },
+      ...createProfessionalTable(
+        ['Skill Category', 'User Count', 'Percentage'],
+        usersBySkillCategory.map(category => {
+          const total = usersBySkillCategory.reduce((sum, c) => sum + c.user_count, 0);
+          const percentage = Math.round((category.user_count / total) * 100);
+          return [
+            category.category_name,
+            category.user_count.toString(),
+            `${percentage}%`
+          ];
+        }),
+        { widths: ['50%', '25%', '25%'], headerColor: '#7c3aed' }
+      )
+    );
   }
   
-  return yPos;
+  return content;
 };
 
-// Function to add Job Market Content
-const addJobMarketContent = (pdf, reportData, margin, startY, pageWidth) => {
-  let yPos = startY;
+// Job Market PDF content
+const generateJobMarketPDF = () => {
   const { totalJobs, jobsByLocation, applicationStats } = reportData;
   
   if (!totalJobs) {
-    pdf.setTextColor(60, 60, 60);
-    pdf.setFontSize(12);
-    pdf.text('No data available for Job Market.', margin, yPos);
-    return yPos + 20;
+    return [{ text: 'No data available for Job Market.', style: 'noData', margin: [0, 20] }];
   }
   
-  // Job Market Overview Section
-  yPos = addSectionTitle(pdf, 'Job Market Overview', margin, yPos);
+  const content = [];
   
-  // Create a table for job stats
-  const jobHeaders = [
-    { name: 'Metric', key: 'metric', width: 300 },
-    { name: 'Value', key: 'value', width: 200 }
-  ];
+  // Job Overview
+  content.push(
+    { text: 'Job Market Overview', style: 'landscapeSubsectionHeader', margin: [0, 5, 0, 12] },
+    ...createProfessionalTable(
+      ['Metric', 'Value', 'Status'],
+      [
+        ['Total Jobs', totalJobs.total_jobs?.toString() || '0', '100%'],
+        ['Active Jobs', totalJobs.active_jobs?.toString() || '0', `${Math.round((totalJobs.active_jobs / totalJobs.total_jobs) * 100) || 0}%`],
+        ['Inactive Jobs', (totalJobs.total_jobs - totalJobs.active_jobs).toString(), `${Math.round(((totalJobs.total_jobs - totalJobs.active_jobs) / totalJobs.total_jobs) * 100) || 0}%`]
+      ],
+      { widths: ['40%', '30%', '30%'], headerColor: '#dc2626' }
+    )
+  );
   
-  const jobData = [
-    { metric: 'Total Jobs', value: totalJobs.total_jobs },
-    { metric: 'Active Jobs', value: totalJobs.active_jobs }
-  ];
-  
-  yPos = createTable(pdf, jobHeaders, jobData, margin, yPos, pageWidth);
-  yPos += 20;
-  
-  // Top Locations Section
+  // Top Locations
   if (jobsByLocation && jobsByLocation.length > 0) {
-    yPos = addSectionTitle(pdf, 'Top Locations', margin, yPos);
-    
-    const locationHeaders = [
-      { name: 'Location', key: 'location', width: 300 },
-      { name: 'Number of Jobs', key: 'job_count', width: 200 }
-    ];
-    
-    yPos = createTable(pdf, locationHeaders, jobsByLocation.slice(0, 5), margin, yPos, pageWidth);
-    yPos += 20;
+    content.push(
+      { text: 'Jobs by Location', style: 'landscapeSubsectionHeader', margin: [0, 25, 0, 12] },
+      ...createProfessionalTable(
+        ['Location', 'Job Count', 'Percentage'],
+        jobsByLocation.slice(0, 10).map(location => {
+          const total = jobsByLocation.reduce((sum, l) => sum + l.job_count, 0);
+          const percentage = Math.round((location.job_count / total) * 100);
+          return [
+            location.location,
+            location.job_count.toString(),
+            `${percentage}%`
+          ];
+        }),
+        { widths: ['50%', '25%', '25%'], headerColor: '#059669' }
+      )
+    );
   }
   
-  // Application Stats Section
+  // Application Statistics
   if (applicationStats) {
-    yPos = addSectionTitle(pdf, 'Application Statistics', margin, yPos);
-    
-    const appHeaders = [
-      { name: 'Metric', key: 'metric', width: 300 },
-      { name: 'Value', key: 'value', width: 200 }
-    ];
-    
-    const appData = [
-      { metric: 'Total Applications', value: applicationStats.total_applications },
-      { metric: 'Accepted Applications', value: applicationStats.accepted_applications },
-      { metric: 'Pending Applications', value: applicationStats.pending_applications }
-    ];
-    
-    yPos = createTable(pdf, appHeaders, appData, margin, yPos, pageWidth);
+    content.push(
+      { text: 'Application Statistics', style: 'landscapeSubsectionHeader', margin: [0, 25, 0, 12] },
+      ...createProfessionalTable(
+        ['Status', 'Count', 'Percentage'],
+        [
+          ['Total Applications', applicationStats.total_applications?.toString() || '0', '100%'],
+          ['Accepted', applicationStats.accepted_applications?.toString() || '0', `${Math.round((applicationStats.accepted_applications / applicationStats.total_applications) * 100) || 0}%`],
+          ['Pending', applicationStats.pending_applications?.toString() || '0', `${Math.round((applicationStats.pending_applications / applicationStats.total_applications) * 100) || 0}%`],
+          ['Rejected', (applicationStats.total_applications - applicationStats.accepted_applications - applicationStats.pending_applications).toString(), `${Math.round(((applicationStats.total_applications - applicationStats.accepted_applications - applicationStats.pending_applications) / applicationStats.total_applications) * 100) || 0}%`]
+        ],
+        { widths: ['40%', '30%', '30%'], headerColor: '#f59e0b' }
+      )
+    );
   }
   
-  return yPos;
+  return content;
 };
 
-// Function to add Skills Assessment Content
-const addSkillsAssessmentContent = (pdf, reportData, margin, startY, pageWidth) => {
-  let yPos = startY;
+// Skills Assessment PDF content
+const generateSkillsAssessmentPDF = () => {
   const { commonSkills, skillGap, topSkilledUsers } = reportData;
   
   if (!commonSkills) {
-    pdf.setTextColor(60, 60, 60);
-    pdf.setFontSize(12);
-    pdf.text('No data available for Skills Assessment.', margin, yPos);
-    return yPos + 20;
+    return [{ text: 'No data available for Skills Assessment.', style: 'noData', margin: [0, 20] }];
   }
   
-  // Most Common Skills Section
+  const content = [];
+  
+  // Most Common Skills
   if (commonSkills.length > 0) {
-    yPos = addSectionTitle(pdf, 'Most Common Skills', margin, yPos);
-    
-    const skillHeaders = [
-      { name: 'Skill', key: 'skill_name', width: 300 },
-      { name: 'User Count', key: 'user_count', width: 200 }
-    ];
-    
-    yPos = createTable(pdf, skillHeaders, commonSkills.slice(0, 5), margin, yPos, pageWidth);
-    yPos += 20;
+    content.push(
+      { text: 'Most Common Skills', style: 'landscapeSubsectionHeader', margin: [0, 5, 0, 12] },
+      ...createProfessionalTable(
+        ['Skill Name', 'User Count', 'Percentage'],
+        commonSkills.slice(0, 10).map(skill => {
+          const total = commonSkills.reduce((sum, s) => sum + s.user_count, 0);
+          const percentage = Math.round((skill.user_count / total) * 100);
+          return [
+            skill.skill_name,
+            skill.user_count.toString(),
+            `${percentage}%`
+          ];
+        }),
+        { widths: ['50%', '25%', '25%'], headerColor: '#06b6d4' }
+      )
+    );
   }
   
-  // Skills Gap Section
+  // Skills Gap Analysis
   if (skillGap && skillGap.length > 0) {
-    yPos = addSectionTitle(pdf, 'Skills Demand-Supply Gap', margin, yPos);
-    
-    const gapHeaders = [
-      { name: 'Skill', key: 'skill_name', width: 200 },
-      { name: 'Demand', key: 'demand_count', width: 100 },
-      { name: 'Supply', key: 'supply_count', width: 100 },
-      { 
-        name: 'Gap', 
-        key: 'gap', 
-        width: 100,
-        // Add color coding for gap
-        getTextColor: (value) => {
-          if (value > 0) return [220, 53, 69]; // Red for shortage
-          if (value < 0) return [40, 167, 69]; // Green for surplus
-          return [60, 60, 60]; // Default text color
-        }
-      }
-    ];
-    
-    // Process data to display gap as text
-    const gapData = skillGap.slice(0, 5).map(skill => ({
-      ...skill,
-      gap: skill.gap > 0 ? `${skill.gap} shortage` : skill.gap < 0 ? `${Math.abs(skill.gap)} surplus` : 'Balanced'
-    }));
-    
-    yPos = createTable(pdf, gapHeaders, gapData, margin, yPos, pageWidth);
-    yPos += 20;
+    content.push(
+      { text: 'Skills Demand-Supply Gap Analysis', style: 'landscapeSubsectionHeader', margin: [0, 25, 0, 12] },
+      ...createProfessionalTable(
+        ['Skill', 'Demand', 'Supply', 'Gap', 'Gap Type'],
+        skillGap.slice(0, 10).map(skill => [
+          skill.skill_name,
+          skill.demand_count?.toString() || '0',
+          skill.supply_count?.toString() || '0',
+          Math.abs(skill.gap)?.toString() || '0',
+          skill.gap > 0 ? 'Shortage' : skill.gap < 0 ? 'Surplus' : 'Balanced'
+        ]),
+        { widths: ['25%', '15%', '15%', '15%', '30%'], headerColor: '#dc2626' }
+      )
+    );
   }
   
-  // Top Skilled Users Section
+  // Top Skilled Users
   if (topSkilledUsers && topSkilledUsers.length > 0) {
-    yPos = addSectionTitle(pdf, 'Top Skilled Users', margin, yPos);
-    
-    const userHeaders = [
-      { name: 'Name', key: 'name', width: 200 },
-      { name: 'Average Rating', key: 'avg_proficiency', width: 150 },
-      { name: 'Skills Count', key: 'skills_count', width: 150 }
-    ];
-    
-    // Format the data to display rating as X/5
-    const userData = topSkilledUsers.slice(0, 5).map(user => ({
-      ...user,
-      avg_proficiency: `${user.avg_proficiency}/5`
-    }));
-    
-    yPos = createTable(pdf, userHeaders, userData, margin, yPos, pageWidth);
+    content.push(
+      { text: 'Top Skilled Users', style: 'landscapeSubsectionHeader', margin: [0, 25, 0, 12] },
+      ...createProfessionalTable(
+        ['Name', 'Average Rating', 'Skills Count', 'Expertise Level'],
+        topSkilledUsers.slice(0, 10).map(user => [
+          user.name,
+          `${user.avg_proficiency}/5`,
+          user.skills_count?.toString() || '0',
+          user.avg_proficiency >= 4 ? 'Expert' : user.avg_proficiency >= 3 ? 'Advanced' : 'Intermediate'
+        ]),
+        { widths: ['35%', '20%', '20%', '25%'], headerColor: '#7c3aed' }
+      )
+    );
   }
   
-  return yPos;
+  return content;
 };
 
-// Function to add Community Engagement Content
-const addCommunityEngagementContent = (pdf, reportData, margin, startY, pageWidth) => {
-  let yPos = startY;
+// Community Engagement PDF content
+const generateCommunityEngagementPDF = () => {
   const { forumActivity, successStories, popularTopics } = reportData;
   
   if (!forumActivity) {
-    pdf.setTextColor(60, 60, 60);
-    pdf.setFontSize(12);
-    pdf.text('No data available for Community Engagement.', margin, yPos);
-    return yPos + 20;
+    return [{ text: 'No data available for Community Engagement.', style: 'noData', margin: [0, 20] }];
   }
   
-  // Forum Activity Section
-  yPos = addSectionTitle(pdf, 'Forum Activity', margin, yPos);
+  const content = [];
   
-  const activityHeaders = [
-    { name: 'Metric', key: 'metric', width: 300 },
-    { name: 'Value', key: 'value', width: 200 }
-  ];
+  // Forum Activity Overview
+  content.push(
+    { text: 'Forum Activity Overview', style: 'landscapeSubsectionHeader', margin: [0, 5, 0, 12] },
+    ...createProfessionalTable(
+      ['Metric', 'Value', 'Status'],
+      [
+        ['Total Topics', forumActivity.total_topics?.toString() || '0', 'Active'],
+        ['Total Posts', forumActivity.total_posts?.toString() || '0', 'Active'],
+        ['Active Users', forumActivity.active_users?.toString() || '0', 'Engaged'],
+        ['Avg Posts per Topic', forumActivity.total_topics > 0 ? Math.round(forumActivity.total_posts / forumActivity.total_topics).toString() : '0', 'Calculated']
+      ],
+      { widths: ['40%', '30%', '30%'], headerColor: '#8b5cf6' }
+    )
+  );
   
-  const activityData = [
-    { metric: 'Total Topics', value: forumActivity.total_topics },
-    { metric: 'Total Posts', value: forumActivity.total_posts },
-    { metric: 'Active Users', value: forumActivity.active_users }
-  ];
-  
-  yPos = createTable(pdf, activityHeaders, activityData, margin, yPos, pageWidth);
-  yPos += 20;
-  
-  // Success Stories Section
+  // Success Stories
   if (successStories) {
-    yPos = addSectionTitle(pdf, 'Success Stories', margin, yPos);
-    
-    const storyHeaders = [
-      { name: 'Metric', key: 'metric', width: 300 },
-      { name: 'Value', key: 'value', width: 200 }
-    ];
-    
-    const storyData = [
-      { metric: 'Total Stories', value: successStories.total_stories },
-      { metric: 'Approved Stories', value: successStories.approved_stories }
-    ];
-    
-    yPos = createTable(pdf, storyHeaders, storyData, margin, yPos, pageWidth);
-    yPos += 20;
+    content.push(
+      { text: 'Success Stories Statistics', style: 'landscapeSubsectionHeader', margin: [0, 25, 0, 12] },
+      ...createProfessionalTable(
+        ['Metric', 'Count', 'Percentage'],
+        [
+          ['Total Stories', successStories.total_stories?.toString() || '0', '100%'],
+          ['Approved Stories', successStories.approved_stories?.toString() || '0', `${Math.round((successStories.approved_stories / successStories.total_stories) * 100) || 0}%`],
+          ['Pending Stories', (successStories.total_stories - successStories.approved_stories).toString(), `${Math.round(((successStories.total_stories - successStories.approved_stories) / successStories.total_stories) * 100) || 0}%`]
+        ],
+        { widths: ['40%', '30%', '30%'], headerColor: '#f59e0b' }
+      )
+    );
   }
   
-  // Popular Topics Section
+  // Popular Topics
   if (popularTopics && popularTopics.length > 0) {
-    yPos = addSectionTitle(pdf, 'Popular Discussion Topics', margin, yPos);
-    
-    const topicHeaders = [
-      { name: 'Topic', key: 'title', width: 250 },
-      { name: 'Posts', key: 'post_count', width: 100 },
-      { name: 'Last Activity', key: 'last_activity', format: 'date', width: 150 }
-    ];
-    
-    yPos = createTable(pdf, topicHeaders, popularTopics.slice(0, 5), margin, yPos, pageWidth);
+    content.push(
+      { text: 'Most Popular Discussion Topics', style: 'landscapeSubsectionHeader', margin: [0, 25, 0, 12] },
+      ...createProfessionalTable(
+        ['Topic Title', 'Post Count', 'Last Activity', 'Engagement Level'],
+        popularTopics.slice(0, 10).map(topic => [
+          topic.title,
+          topic.post_count?.toString() || '0',
+          new Date(topic.last_activity).toLocaleDateString(),
+          topic.post_count >= 20 ? 'High' : topic.post_count >= 10 ? 'Medium' : 'Low'
+        ]),
+        { widths: ['45%', '15%', '20%', '20%'], headerColor: '#059669' }
+      )
+    );
   }
   
-  return yPos;
+  return content;
+};
+
+// Utility function for current date/time
+const getCurrentDateTime = () => {
+  const now = new Date();
+  return now.toLocaleString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
 };
  
   const fetchReportData = async () => {
