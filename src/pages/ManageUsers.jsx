@@ -142,14 +142,9 @@ const ManageUsers = () => {
                                     onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
                                 >
                                     <option value="user">User – Finds jobs, training, and help</option>
-<option value="admin">Admin – Manages the whole system</option>
-<option value="employer">Employer – Posts jobs and hires people</option>
-<option value="microfinance">Microfinance – Gives small loans and savings</option>
-<option value="trainer">Trainer – Teaches skills and business</option>
-<option value="counselor">Counselor – Helps plan careers</option>
-<option value="serviceprovider">Service Provider – Offers services like health or school</option>
-<option value="moderator">Moderator – Watches forums and chats</option>
-
+                                    <option value="admin">Admin – Manages the whole system</option>
+                                    <option value="employer">Employer – Posts jobs and hires people</option>
+                                    <option value="counselor">Counselor – Helps plan careers</option>
                                 </select>
                                 <input 
                                     type="password" 

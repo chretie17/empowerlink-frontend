@@ -109,12 +109,6 @@ const Sidebar = () => {
                         icon: FileText,
                         label: 'Reports',
                         roles: ['admin']
-                    },
-                    {
-                        path: '/microfinancedashboard',
-                        icon: FileText,
-                        label: 'Microfinance Dashboard',
-                        roles: ['admin']
                     }
                 ]
             });

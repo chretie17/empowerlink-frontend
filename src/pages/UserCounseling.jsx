@@ -178,15 +178,7 @@ const UserDashboard = () => {
                     <Target className="w-10 h-10 opacity-80" />
                 </div>
             </div>
-            <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-lg shadow-lg">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h3 className="text-lg font-semibold">AI Job Matches</h3>
-                        <p className="text-3xl font-bold">{jobMatches.length}</p>
-                    </div>
-                    <Briefcase className="w-10 h-10 opacity-80" />
-                </div>
-            </div>
+            
             <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-lg shadow-lg">
                 <div className="flex items-center justify-between">
                     <div>
@@ -329,72 +321,7 @@ const UserDashboard = () => {
         </div>
     );
 
-    const renderJobMatches = () => (
-        <div className="space-y-4">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">AI Job Matches</h2>
-                <button 
-                    onClick={generateJobMatches}
-                    disabled={loading}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                >
-                    <TrendingUp className="w-4 h-4" />
-                    {loading ? 'Generating...' : 'Generate Matches'}
-                </button>
-            </div>
-            {jobMatches.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                    <Briefcase className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p>No job matches found. Click "Generate Matches" to find suitable jobs.</p>
-                </div>
-            ) : (
-                jobMatches.map(match => (
-                    <div key={match.id} className="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="flex-1">
-                                <h3 className="font-semibold text-lg">{match.title}</h3>
-                                <p className="text-gray-600">{match.employer_name}</p>
-                                <div className="flex items-center gap-4 text-sm text-gray-500 mt-2">
-                                    <span className="flex items-center gap-1">
-                                        <MapPin className="w-4 h-4" />
-                                        {match.location}
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                        <DollarSign className="w-4 h-4" />
-                                        {match.salary}
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <div className="flex items-center gap-1 text-green-600 mb-2">
-                                    <Star className="w-4 h-4" />
-                                    <span className="font-bold">{match.match_score}%</span>
-                                </div>
-                                <span className="text-sm text-gray-500">Match Score</span>
-                            </div>
-                        </div>
-                        <div className="mb-4">
-                            <p className="text-sm text-green-700 mb-2">
-                                <strong>Matching Skills:</strong> {match.matching_skills?.join(', ') || 'None'}
-                            </p>
-                            <p className="text-sm text-orange-700">
-                                <strong>Skill Gaps:</strong> {match.skill_gaps?.join(', ') || 'None'}
-                            </p>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-600">{match.job_type}</span>
-                            <button 
-                                onClick={() => applyForJob(match.job_id)}
-                                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm"
-                            >
-                                Apply Now
-                            </button>
-                        </div>
-                    </div>
-                ))
-            )}
-        </div>
-    );
+  
 
     const renderApplications = () => (
         <div className="space-y-4">
@@ -518,7 +445,6 @@ const UserDashboard = () => {
                             { key: 'sessions', label: 'Sessions', icon: Calendar },
                             { key: 'assessments', label: 'Assessments', icon: FileText },
                             { key: 'goals', label: 'Goals', icon: Target },
-                            { key: 'matches', label: 'AI Job Matches', icon: Briefcase },
                             { key: 'applications', label: 'Applications', icon: FileText },
                             { key: 'resources', label: 'Resources', icon: BookOpen }
                         ].map(tab => {
